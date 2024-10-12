@@ -30,8 +30,8 @@
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
-        "max_epochs": 30,
-        "checkpoint_dir": "models"
+        "max_epochs": 30
     },
+    "checkpoint_dir": "models",
     "run_name": "VGG-like classifier"
 }

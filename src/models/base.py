@@ -60,10 +60,10 @@ class BaseClassificationModel(BaseModel):
         else:
             labels = z.argmax(axis=1)
         
-        accuracy = (labels == y).mean()
+        accuracy = (labels == y).float().mean()
         self.log_dict({
             'val_loss': loss,
-            'val_accuracy': accuracy
+            'val_accuracy': float(accuracy.cpu().item())
         })
 
 
@@ -81,10 +81,10 @@ class BaseClassificationModel(BaseModel):
         else:
             labels = z.argmax(axis=1)
         
-        accuracy = (labels == y).mean()
+        accuracy = (labels == y).float().mean()
         self.log_dict({
             'test_loss': loss,
-            'test_accuracy': accuracy
+            'test_accuracy': float(accuracy.cpu().item())
         })
 
     def configure_optimizers(self):
