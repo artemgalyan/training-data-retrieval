@@ -38,7 +38,7 @@ class BaseClassificationModel(BaseModel):
         x, y = batch
         z = self.get_logits(x)
         if self.num_classes == 2:
-            z = z[:, 1:]
+            z = z[:, 1].view(-1, 1)
             y = y.float()
 
         loss = self.loss(z, y)
@@ -50,7 +50,7 @@ class BaseClassificationModel(BaseModel):
         x, y = batch
         z = self.get_logits(x)
         if self.num_classes == 2:
-            z = z[:, 1:]
+            z = z[:, 1].view(-1, 1)
             y = y.float()
 
         loss = self.loss(z, y.view(-1, 1))
@@ -61,8 +61,9 @@ class BaseClassificationModel(BaseModel):
         x, y = batch
         z = self.get_logits(x)
         if self.num_classes == 2:
-            z = z[:, 1:]
+            z = z[:, 1].view(-1, 1)
             y = y.float()
+        
         loss = self.loss(z, y)
         self.log('test_loss')
         return loss
