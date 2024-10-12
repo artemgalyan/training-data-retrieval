@@ -49,7 +49,7 @@ class BaseClassificationModel(BaseModel):
             y_hat = y_hat[:, 1:]
             y = y.float()
         loss = self.loss(y_hat, y.view(-1, 1))
-        self.log('val_loss')
+        self.log('val_loss', loss)
         return loss
     
     def test_step(self, batch: Tensor, batch_idx: int) -> Tensor:
