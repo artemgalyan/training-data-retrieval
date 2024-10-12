@@ -18,6 +18,9 @@ dependencies = [
     'wandb'
 ]
 
+[project.scripts]
+build-features = 'src.train_classificator:main'
+
 [tool.setuptools.packages.find]
 include=['src', 'src.*']
 

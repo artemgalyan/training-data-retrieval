@@ -46,7 +46,7 @@ class BaseClassificationModel(BaseModel):
         self.log('train_loss', loss, on_epoch=True)
         return loss
     
-    def validation_step(self, batch: Tensor, batch_idx: int) -> Tensor:
+    def validation_step(self, batch: Tensor, batch_idx: int) -> None:
         x, y = batch
         z = self.get_logits(x)
         if self.num_classes == 2:
@@ -54,10 +54,20 @@ class BaseClassificationModel(BaseModel):
             y = y.float()
         
         loss = self.loss(z, y)
-        self.log('val_loss', loss)
-        return loss
-    
-    def test_step(self, batch: Tensor, batch_idx: int) -> Tensor:
+
+        if self.num_classes == 2:
+            labels = z > 0
+        else:
+            labels = z.argmax(axis=1)
+        
+        accuracy = (labels == y).mean()
+        self.log_dict({
+            'val_loss': loss,
+            'val_accuracy': accuracy
+        })
+
+
+    def test_step(self, batch: Tensor, batch_idx: int) -> None:
         x, y = batch
         z = self.get_logits(x)
         if self.num_classes == 2:
@@ -65,8 +75,17 @@ class BaseClassificationModel(BaseModel):
             y = y.float()
         
         loss = self.loss(z, y)
-        self.log('test_loss')
-        return loss
+
+        if self.num_classes == 2:
+            labels = z > 0
+        else:
+            labels = z.argmax(axis=1)
+        
+        accuracy = (labels == y).mean()
+        self.log_dict({
+            'test_loss': loss,
+            'test_accuracy': accuracy
+        })
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=1e-3)

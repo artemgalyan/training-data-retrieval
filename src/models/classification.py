@@ -25,6 +25,7 @@ class ClassificationNet(BaseClassificationModel):
         """
 
         super().__init__(num_classes)
+        self.save_hyperparameters()
 
         self.configuration = configuration
         self.image_channels = image_channels
@@ -104,6 +105,7 @@ class ClassificationResNet(BaseClassificationModel):
         """
 
         super().__init__(num_classes)
+        self.save_hyperparameters()
 
         self.configuration = configuration
         self.image_channels = image_channels
