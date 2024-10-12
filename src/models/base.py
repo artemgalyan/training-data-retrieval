@@ -45,7 +45,9 @@ class BaseClassificationModel(BaseModel):
     def validation_step(self, batch: Tensor, batch_idx: int) -> Tensor:
         x, y = batch
         y_hat = self.get_logits(x)
-        loss = self.loss(y_hat, y)
+        if self.num_classes == 2:
+            y_hat = y_hat[:, 1:]
+        loss = self.loss(y_hat, y).view(-1, 1)
         self.log('val_loss')
         return loss
     
