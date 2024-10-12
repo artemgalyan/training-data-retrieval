@@ -7,14 +7,14 @@ class Sequential(nn.Module):
     def __init__(self, *args: nn.Module) -> None:
         super().__init__()
 
-        self.modules = nn.ModuleList(list(args))
+        self.main = nn.ModuleList(list(args))
     
     def forward(
         self,
         x: Tensor,
     ) -> tuple[Tensor, list[Tensor]]:
         activations = []
-        for m in self.modules:
+        for m in self.main:
             x = m(x)
             activations.append(x)
         return x, activations
