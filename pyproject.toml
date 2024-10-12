@@ -12,7 +12,6 @@ dependencies = [
     'opencv-python==4.10.0.84',
     'matplotlib==3.9.2',
     'torchinfo',
-    'jupyterlab',
     'tqdm',
     'gdown',
     'wandb'
