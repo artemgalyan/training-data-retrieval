@@ -9,13 +9,13 @@ class Sequential(nn.Module):
 
         self.modules = nn.ModuleList(list(args))
     
-    def __call__(
+    def forward(
         self,
         x: Tensor,
     ) -> tuple[Tensor, list[Tensor]]:
         activations = []
         for m in self.modules:
-            x = self.m(x)
+            x = m(x)
             activations.append(x)
         return x, activations
 

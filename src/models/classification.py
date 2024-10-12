@@ -54,7 +54,7 @@ class ClassificationNet(BaseClassificationModel):
         
         modules.append(nn.Conv2d(prev_dim, prev_dim, 3, padding=1))
         
-        self.modules = Sequential(*modules)
+        self.main = Sequential(*modules)
         self.classifier = nn.Linear(prev_dim, num_classes)
     
     def forward(
@@ -62,7 +62,7 @@ class ClassificationNet(BaseClassificationModel):
         x: Tensor,
         return_activations: bool = False
     ) -> Tensor | tuple[Tensor, list[Tensor]]:
-        x, act = self.modules(x)
+        x, act = self.main(x)
         
         x = x.mean(dim=[-1, -2])
         x = self.classifier(x)
