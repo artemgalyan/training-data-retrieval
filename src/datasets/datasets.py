@@ -44,7 +44,7 @@ class HistologyDataset(ClassificationDataset):
 
         for clazz in self.classes:
             files = list(glob(f'{self.split_path / clazz}/*.png'))
-            self.images.extend(files)
+            self.image_files.extend(files)
             self.labels.extend([clazz] * len(files))
         
         if keep_in_memory:
