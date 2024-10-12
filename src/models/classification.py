@@ -63,9 +63,9 @@ class ClassificationNet(BaseClassificationModel):
         return_activations: bool = False
     ) -> Tensor | tuple[Tensor, list[Tensor]]:
         if return_activations:
-            x, act = self.modules(x, return_activations)
+            x, act = self.modules.forward(x, return_activations)
         else:
-            x = self.modules(x, return_activations)
+            x = self.modules.forward(x, return_activations)
         
         x = x.mean(dim=[-1, -2])
         x = self.classifier(x)

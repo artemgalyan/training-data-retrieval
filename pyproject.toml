@@ -14,7 +14,8 @@ dependencies = [
     'torchinfo',
     'jupyterlab',
     'tqdm',
-    'gdown'
+    'gdown',
+    'wandb'
 ]
 
 [tool.setuptools.packages.find]

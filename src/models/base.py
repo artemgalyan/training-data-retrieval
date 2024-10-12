@@ -39,7 +39,21 @@ class BaseClassificationModel(BaseModel):
         z = self.get_logits(x)
         loss = self.loss(z, y)
 
-        self.log('train_loss', loss)
+        self.log('train_loss', loss, on_epoch=True)
+        return loss
+    
+    def validation_step(self, batch: Tensor, batch_idx: int) -> Tensor:
+        x, y = batch
+        y_hat = self.get_logits(x)
+        loss = self.loss(y_hat, y)
+        self.log('val_loss')
+        return loss
+    
+    def test_step(self, batch: Tensor, batch_idx: int) -> Tensor:
+        x, y = batch
+        y_hat = self.get_logits(x)
+        loss = self.loss(y_hat, y)
+        self.log('test_loss')
         return loss
 
     def configure_optimizers(self):
