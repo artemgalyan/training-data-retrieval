@@ -11,6 +11,7 @@ dependencies = [
     'lightning==2.4.0',
     'opencv-python==4.10.0.84',
     'matplotlib==3.9.2',
+    'torchvision',
     'torchinfo',
     'tqdm',
     'gdown',
@@ -18,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-build-features = 'src.train_classificator:main'
+train_classificator = 'src.train_classificator:main'
 
 [tool.setuptools.packages.find]
 include=['src', 'src.*']

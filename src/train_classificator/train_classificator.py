@@ -4,15 +4,14 @@ import json
 from pathlib import Path
 
 import lightning as L
-
 import torchvision.transforms.v2 as T
 
 from lightning.pytorch.callbacks import ModelCheckpoint, ProgressBar, StochasticWeightAveraging, EarlyStopping
 from lightning.pytorch.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
-from .datasets import ClassificationDataset, HistologyDataset
-from .models import model_for_name, BaseClassificationModel 
+from src.datasets import ClassificationDataset, HistologyDataset
+from src.models import model_for_name, BaseClassificationModel 
 
 
 def get_transforms(
