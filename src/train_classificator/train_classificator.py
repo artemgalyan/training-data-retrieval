@@ -48,7 +48,7 @@ def load_datasets(config: dict) -> tuple[ClassificationDataset, ClassificationDa
 
 
 @click.command()
-@click.argument('run_configuration', type=click.Path(exists=True), required=True, help='Path to .json run configuration file')
+@click.argument('run_configuration', type=click.Path(exists=True), required=True)
 def main(run_configuration: str) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
