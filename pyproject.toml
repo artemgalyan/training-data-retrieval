@@ -1,0 +1,22 @@
+[project]
+name = 'src'
+version = '0.1.0'
+authors = [
+    {name = 'Artsiom Halian', email = 'galyan.artyom@gmail.com'}
+]
+description = 'Experiments with training data retrieval from trained neural networks'
+requires-python = '>=3.11.7'
+dependencies = [
+    'torch==2.4.1',
+    'lightning==2.4.0',
+    'opencv-python==4.10.0.84',
+    'matplotlib==3.9.2',
+    'jupyterlab',
+    'tqdm'
+]
+
+[tool.setuptools.packages.find]
+include=['src', 'src.*']
+
+[tool.setuptools]
+include-package-data = true
