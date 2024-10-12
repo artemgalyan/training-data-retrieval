@@ -23,7 +23,8 @@
             "split_path": "test",
             "classes": ["epi", "nrm"]
         },
-        "image_size": [128, 128]
+        "image_size": [128, 128],
+        "num_workers": 2
     },
     "batch_size": 64,
     "trainer": {

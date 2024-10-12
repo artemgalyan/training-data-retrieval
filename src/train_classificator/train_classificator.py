@@ -1,6 +1,7 @@
 import click
 import json
 
+from datetime import datetime
 from pathlib import Path
 
 import lightning as L
@@ -12,6 +13,10 @@ from torch.utils.data import DataLoader
 
 from src.datasets import ClassificationDataset, HistologyDataset
 from src.models import model_for_name, BaseClassificationModel 
+
+
+def log(message: str) -> None:
+    click.echo(f'[{datetime.now():%H:%M:%S}] {message}')
 
 
 def get_transforms(
@@ -57,11 +62,16 @@ def main(run_configuration: str) -> None:
     
     with open(run_configuration, 'r') as file:
         config = json.loads(file.read())
-    
+
+    log('Successfully loaded the configuration')
+
     model = load_model(config['model'])
+    log('Successfully loaded model')
     train_dataset, val_dataset = load_datasets(config['datasets'])
-    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, drop_last=True, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'])
+
+    num_workers = config['datasets'].get('num_workers', 0)
+    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, drop_last=True, pin_memory=True, num_workers=num_workers)
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], num_workers=num_workers)
 
     trainer = L.Trainer(
       **config['trainer'],
@@ -79,7 +89,6 @@ def main(run_configuration: str) -> None:
               save_last=True
           ),
           ProgressBar(),
-          EarlyStopping()
       ]
     )
     click.echo('Starting the run')
