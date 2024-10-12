@@ -37,6 +37,10 @@ class BaseClassificationModel(BaseModel):
     def training_step(self, batch: Tensor, *args: tp.Any) -> Tensor:
         x, y = batch
         z = self.get_logits(x)
+        if self.num_classes == 2:
+            z = z[:, 1:]
+            y = y.float()
+
         loss = self.loss(z, y)
 
         self.log('train_loss', loss, on_epoch=True)
@@ -44,18 +48,22 @@ class BaseClassificationModel(BaseModel):
     
     def validation_step(self, batch: Tensor, batch_idx: int) -> Tensor:
         x, y = batch
-        y_hat = self.get_logits(x)
+        z = self.get_logits(x)
         if self.num_classes == 2:
-            y_hat = y_hat[:, 1:]
+            z = z[:, 1:]
             y = y.float()
-        loss = self.loss(y_hat, y.view(-1, 1))
+
+        loss = self.loss(z, y.view(-1, 1))
         self.log('val_loss', loss)
         return loss
     
     def test_step(self, batch: Tensor, batch_idx: int) -> Tensor:
         x, y = batch
-        y_hat = self.get_logits(x)
-        loss = self.loss(y_hat, y)
+        z = self.get_logits(x)
+        if self.num_classes == 2:
+            z = z[:, 1:]
+            y = y.float()
+        loss = self.loss(z, y)
         self.log('test_loss')
         return loss
 
