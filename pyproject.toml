@@ -5,7 +5,7 @@ authors = [
     {name = 'Artsiom Halian', email = 'galyan.artyom@gmail.com'}
 ]
 description = 'Experiments with training data retrieval from trained neural networks'
-requires-python = '>=3.11.7'
+requires-python = '>=3.10.0'
 dependencies = [
     'torch==2.4.1',
     'lightning==2.4.0',
