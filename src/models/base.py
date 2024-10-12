@@ -47,6 +47,7 @@ class BaseClassificationModel(BaseModel):
         y_hat = self.get_logits(x)
         if self.num_classes == 2:
             y_hat = y_hat[:, 1:]
+            y = y.float()
         loss = self.loss(y_hat, y.view(-1, 1))
         self.log('val_loss')
         return loss
