@@ -79,7 +79,7 @@ def main(run_configuration: str) -> None:
           project='Training data retrieval',
           name=config['run_name']
       ),
-      check_val_every_n_epoch=5,
+      check_val_every_n_epoch=1,
       callbacks=[
           ModelCheckpoint(
               monitor='val_loss',
