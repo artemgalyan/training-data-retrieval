@@ -90,7 +90,7 @@ class BaseClassificationModel(BaseModel):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=1e-3)
-        scheduler = StepLR(optimizer, step_size=80, gamma=0.8)
+        scheduler = StepLR(optimizer, step_size=2, gamma=0.8)
         return [optimizer], [scheduler]
     
     @abstractmethod
