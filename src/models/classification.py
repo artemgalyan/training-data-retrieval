@@ -125,7 +125,7 @@ class ClassificationResNet(BaseClassificationModel):
         )
         for dim, num_blocks in configuration:
             modules.append(
-                ResidualBlock(prev_dim, dim, kernel_size=4, padding=2, **kw)
+                ResidualBlock(prev_dim, dim, kernel_size=4, padding=1, stride=2, **kw)
             )
             modules.extend([
                 ResidualBlock(dim, dim, kernel_size=3, padding=1, **kw)
