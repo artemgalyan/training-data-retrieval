@@ -131,6 +131,7 @@ class ClassificationResNet(BaseClassificationModel):
                 ResidualBlock(dim, dim, kernel_size=3, padding=1, **kw)
                 for _ in range(num_blocks)
             ])
+            prev_dim = dim
         
         self.main = Sequential(*modules)
         self.classifier = nn.Linear(prev_dim, num_classes)
