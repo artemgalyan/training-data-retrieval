@@ -132,7 +132,7 @@ class ClassificationResNet(BaseClassificationModel):
                 for _ in range(num_blocks)
             ])
         
-        self.modules = Sequential(*modules)
+        self.main = Sequential(*modules)
         self.classifier = nn.Linear(prev_dim, num_classes)
     
     def forward(
@@ -140,10 +140,7 @@ class ClassificationResNet(BaseClassificationModel):
         x: Tensor,
         return_activations: bool = False
     ) -> Tensor | tuple[Tensor, list[Tensor]]:
-        if return_activations:
-            x, act = self.modules(x, return_activations)
-        else:
-            x = self.modules(x, return_activations)
+        x, act = self.main(x)
         
         x = x.mean(dim=[-1, -2])
         x = self.classifier(x)
