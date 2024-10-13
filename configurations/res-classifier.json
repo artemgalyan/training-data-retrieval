@@ -1,0 +1,35 @@
+{
+    "model": {
+        "model_type": "ClassificationResNet",
+        "kwargs": {
+            "num_classes": 2,
+            "configuration": [
+                [8, 1],
+                [12, 1],
+                [24, 1],
+                [32, 1]
+            ],
+            "image_channels": 3
+        }
+    },
+    "datasets": {
+        "train": {
+            "split_path": "train",
+            "classes": ["epi", "nrm"]
+        },
+        "val": {
+            "split_path": "test",
+            "classes": ["epi", "nrm"]
+        },
+        "image_size": [128, 128],
+        "num_workers": 2
+    },
+    "batch_size": 64,
+    "trainer": {
+        "accelerator": "cuda",
+        "precision": 16,
+        "max_epochs": 30
+    },
+    "checkpoint_dir": "models",
+    "run_name": "ResNet classifier"
+}

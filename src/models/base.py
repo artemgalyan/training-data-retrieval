@@ -7,6 +7,7 @@ import torch
 
 from torch import nn, Tensor
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import StepLR
 
 
 class BaseModel(L.LightningModule):
@@ -89,7 +90,8 @@ class BaseClassificationModel(BaseModel):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=1e-3)
-        return optimizer
+        scheduler = StepLR(optimizer, step_size=80, gamma=0.8)
+        return [optimizer], [scheduler]
     
     @abstractmethod
     def get_logits(self, samples: Tensor) -> Tensor:

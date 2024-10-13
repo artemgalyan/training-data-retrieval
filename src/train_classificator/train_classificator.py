@@ -7,7 +7,7 @@ from pathlib import Path
 import lightning as L
 import torchvision.transforms.v2 as T
 
-from lightning.pytorch.callbacks import ModelCheckpoint, ProgressBar, StochasticWeightAveraging, EarlyStopping
+from lightning.pytorch.callbacks import ModelCheckpoint, TQDMProgressBar, LearningRateMonitor
 from lightning.pytorch.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
@@ -88,7 +88,8 @@ def main(run_configuration: str) -> None:
               save_top_k=3,
               save_last=True
           ),
-          ProgressBar(),
+          TQDMProgressBar(),
+          LearningRateMonitor()
       ]
     )
     click.echo('Starting the run')
