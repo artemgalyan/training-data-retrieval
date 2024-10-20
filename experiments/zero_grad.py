@@ -34,8 +34,9 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
     if not save_dir.exists():
         save_dir.mkdir()
 
-    for i, image in enumerate(images):
-        image = image.transpose(1, 2, 0)[..., ::-1]
+    for i in range(images.shape[0]):
+        image = images[i].transpose(1, 2, 0)[..., ::-1]
+        print(image.max(), image.min())
         save_path = save_dir / f'{i}.png'
         cv2.imwrite(
             str(save_path),
