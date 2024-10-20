@@ -98,7 +98,7 @@ def main(
     for i in bar:
         optim.zero_grad()
         model.zero_grad()
-        y = model(sample_images[:, 1])
+        y = model(sample_images)[:, 1]
         # y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
