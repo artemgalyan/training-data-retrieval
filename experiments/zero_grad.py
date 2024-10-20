@@ -98,7 +98,7 @@ def main(
     for i in bar:
         optim.zero_grad()
         model.zero_grad()
-        y = model(sample_images)[:, 1]
+        y = model(sample_images)
         # y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
@@ -108,6 +108,7 @@ def main(
         loss = (y_grad ** 2).sum()
         loss.backward()
         optim.step()
+        model.zero_grad()
         bar.set_description(str(loss.cpu().item()))
         scheduler.step()
         losses.append(float(loss.cpu().item()))
