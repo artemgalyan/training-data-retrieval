@@ -122,8 +122,6 @@ def main(
         if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
         
-        log(f'#{i} loss: {float(loss.cpu().item())}')
-
     with open(str(save_path / 'losses.txt'), 'w') as file:
         file.writelines(map(str, losses))
 
