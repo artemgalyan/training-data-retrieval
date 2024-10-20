@@ -37,7 +37,10 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
     for i, image in enumerate(images):
         image = image.transpose(1, 2, 0)[..., ::-1]
         save_path = save_dir / f'{i}.png'
-        cv2.imwrite(str(save_path), image)
+        cv2.imwrite(
+            str(save_path),
+            (255 * image).astype('uint8')
+        )
 
 
 @click.command()
