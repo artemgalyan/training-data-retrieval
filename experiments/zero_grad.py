@@ -28,7 +28,7 @@ def load_model(config: dict) -> BaseClassificationModel:
 
 
 def save_data(images: torch.Tensor, save_dir: Path) -> None:
-    images = images.cpu().detach().numpy()
+    images = images.clone().cpu().detach().numpy()
 
     if not save_dir.exists():
         save_dir.mkdir()
@@ -70,7 +70,7 @@ def main(
 
     device = config.get('device', 'cpu')
     log(f'Using {device}')
-    model.eval().to(device)
+    model.to(device)
 
     run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
     save_path = Path(run_name)
@@ -90,7 +90,7 @@ def main(
     sample_images.requires_grad = True
 
     losses = []
-    optim = SGD([sample_images], lr=.1)
+    optim = SGD([sample_images], lr=0.1)
     scheduler = StepLR(optim, 10_000, gamma=0.1)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
     target[n_images // 2:] = 0
@@ -107,6 +107,7 @@ def main(
             sample_images,
             create_graph=True
         )[0]
+        
         loss = (y_grad ** 2).sum()
         loss.backward()
         optim.step()
@@ -120,6 +121,8 @@ def main(
 
         if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
+        
+        log(f'#{i} loss: {float(loss.cpu().item())}')
 
     with open(str(save_path / 'losses.txt'), 'w') as file:
         file.writelines(map(str, losses))
