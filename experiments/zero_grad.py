@@ -46,7 +46,6 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('n_iterations', type=int, required=True)
 @click.argument('val_every', type=int, required=True)
 @click.argument('initialization', type=str, required=True)
-
 def main(
     run_configuration: str,
     n_images: int,
@@ -116,3 +115,7 @@ def main(
 
     with open(str(save_path / 'losses.txt'), 'w') as file:
         file.writelines(map(str, losses))
+
+
+if __name__ == '__main__':
+    main()
