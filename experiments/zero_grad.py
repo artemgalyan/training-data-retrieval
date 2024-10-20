@@ -72,6 +72,7 @@ def main(
 
     run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
     save_path = Path(run_name)
+    save_path.mkdir()
 
     if initialization == 'random':
         sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
