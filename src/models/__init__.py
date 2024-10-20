@@ -1,5 +1,6 @@
 from .base import *
 from .classification import * 
+from .utils import *
 
 
 def model_for_name(clazz: str) -> type[BaseModel]:

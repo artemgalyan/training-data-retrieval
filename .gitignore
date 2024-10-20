@@ -1,5 +1,6 @@
 .vscode/
 .idea/
+results/
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks

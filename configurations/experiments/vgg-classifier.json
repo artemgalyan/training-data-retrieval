@@ -1,0 +1,7 @@
+{
+    "model": {
+        "model_type": "ClassificationNet",
+        "checkpoint": "models/vgg_128x128.ckpt"
+    },
+    "device": "cuda:0"
+}
