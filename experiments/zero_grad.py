@@ -79,7 +79,7 @@ def main(
         sample_images = 0.05 * torch.randn(15, 3, 128, 128)#.clip(0, 1)
         sample_images + torch.tensor([179 / 255, 128 / 255, 147 / 255]).reshape(1, 3, 1, 1)
     
-    sample_images.to(device)
+    sample_images = sample_images.to(device)
     sample_images.clip_(0, 1)
     sample_images.requires_grad = True
 

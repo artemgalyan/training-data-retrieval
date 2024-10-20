@@ -1,7 +1,7 @@
 {
     "model": {
         "model_type": "ClassificationResNet",
-        "checkpoint": "models/res_128x128.ckpt"
+        "checkpoint": "training-data-retrieval/models/res_128x128.ckpt"
     },
     "device": "cuda:0"
 }
