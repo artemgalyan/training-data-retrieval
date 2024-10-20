@@ -81,7 +81,7 @@ def main(
     if initialization == 'random':
         sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
     elif initialization == 'color':
-        sample_images = 0.05 * torch.randn(15, 3, 128, 128)#.clip(0, 1)
+        sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
         sample_images + torch.tensor([179 / 255, 128 / 255, 147 / 255]).reshape(1, 3, 1, 1)
     
     sample_images = sample_images.to(device)
@@ -98,8 +98,8 @@ def main(
     for i in bar:
         optim.zero_grad()
         model.zero_grad()
-        y = model(sample_images)
-        y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
+        y = model(sample_images[:, 1])
+        # y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
             sample_images,
@@ -109,7 +109,7 @@ def main(
         loss.backward()
         optim.step()
         bar.set_description(str(loss.cpu().item()))
-        scheduler.step(i)
+        scheduler.step()
         losses.append(float(loss.cpu().item()))
 
         with torch.no_grad():
