@@ -6,7 +6,6 @@ from pathlib import Path
 
 import cv2
 import torch
-import torch.nn.functional as F
 
 from torch.autograd import grad
 from torch.optim import SGD
@@ -36,11 +35,10 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 
     for i in range(images.shape[0]):
         image = images[i].transpose(1, 2, 0)[..., ::-1]
-        print(image.max(), image.min(), image.mean(), (255 * image).astype('uint8').max())
         save_path = save_dir / f'{i}.png'
         cv2.imwrite(
             str(save_path),
-            image
+            (255 * image).astype('uint8')
         )
 
 
@@ -80,13 +78,15 @@ def main(
         save_path.mkdir()
 
     if initialization == 'random':
+        log('Using random initialization')
         sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
     elif initialization == 'color':
+        log('Using color initialization')
         sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
-        sample_images + torch.tensor([179 / 255, 128 / 255, 147 / 255]).reshape(1, 3, 1, 1)
+        sample_images = sample_images + torch.tensor([179.0 / 255, 128.0 / 255, 147.0 / 255]).reshape(1, 3, 1, 1)
     
     sample_images = sample_images.to(device)
-    sample_images.clip_(0, 1)
+    sample_images = sample_images.clip(0, 1)
     sample_images.requires_grad = True
 
     losses = []
@@ -96,6 +96,7 @@ def main(
     target[n_images // 2:] = 0
 
     bar = tqdm(range(n_iterations))
+    save_data(sample_images, save_path / 'initial')
     for i in bar:
         optim.zero_grad()
         model.zero_grad()
@@ -116,7 +117,7 @@ def main(
 
         with torch.no_grad():
             sample_images.clip_(0, 1)
-        
+
         if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
 
