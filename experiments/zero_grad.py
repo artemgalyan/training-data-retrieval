@@ -112,7 +112,7 @@ def main(
         with torch.no_grad():
             sample_images.clip_(0, 1)
         
-        if i % val_every:
+        if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
 
     with open(str(save_path / 'losses.txt'), 'w') as file:
