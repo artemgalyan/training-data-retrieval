@@ -36,7 +36,7 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 
     for i in range(images.shape[0]):
         image = images[i].transpose(1, 2, 0)[..., ::-1]
-        print(image.max(), image.min())
+        print(image.max(), image.min(), image.mean(), (255 * image).astype('uint8').max())
         save_path = save_dir / f'{i}.png'
         cv2.imwrite(
             str(save_path),
