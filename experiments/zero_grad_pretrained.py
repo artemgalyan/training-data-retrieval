@@ -38,31 +38,23 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('n_iterations', type=int, required=True)
 @click.argument('val_every', type=int, required=True)
 @click.argument('initialization', type=str, required=True)
+@click.argument('device', type=str, required=True)
 def main(
     run_configuration: str,
     n_images: int,
     n_iterations: int,
     val_every: int,
-    initialization: str
+    initialization: str,
+    device: str
 ) -> None:
-    config_path = Path(run_configuration)
-    if not config_path.exists() or not config_path.is_file():
-        click.echo('Run configuration file should exist!', error=True)
-        return
-    
-    with open(run_configuration, 'r') as file:
-        config = json.loads(file.read())
-
     log('Successfully loaded the configuration')
 
-    model = resnet18(ResNet18_Weights.IMAGENET1K_V1)
+    model = resnet18(ResNet18_Weights.IMAGENET1K_V1).eval().to(device)
     log('Successfully loaded model')
 
-    device = config.get('device', 'cpu')
     log(f'Using {device}')
-    model.to(device)
 
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
+    run_name = f'ResNet18-zero-grad-{n_images}-{n_iterations}-{initialization}'
     save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
@@ -91,7 +83,6 @@ def main(
         optim.zero_grad()
         model.zero_grad()
         y = model(sample_images)
-        # y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
             sample_images,
