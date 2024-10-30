@@ -48,7 +48,7 @@ def main(
 ) -> None:
     log('Successfully loaded the configuration')
 
-    model = resnet18(ResNet18_Weights.IMAGENET1K_V1).eval().to(device)
+    model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1).to(device)
     log('Successfully loaded model')
 
     log(f'Using {device}')
