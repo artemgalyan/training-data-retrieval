@@ -76,7 +76,6 @@ def main(
     device = config.get('device', 'cpu')
     log(f'Using {device}')
     model.to(device)
-    parameters = get_params_vector(model)
 
     run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
     save_path = Path(run_name)
@@ -110,11 +109,12 @@ def main(
         y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
-            parameters,
+            model.parameters(),
             create_graph=True
-        )[0]
+        )
         
-        loss = (y_grad ** 2).mean()
+        y_grad = torch.cat([g.view(-1) for g in y_grad])
+        loss = sum((y ** 2).mean() for y in y_grad)
         loss.backward()
         optim.step()
         model.zero_grad()
