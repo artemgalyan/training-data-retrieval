@@ -10,21 +10,12 @@ import torch
 from torch.autograd import grad
 from torch.optim import SGD
 from torch.optim.lr_scheduler import StepLR
+from torchvision.models import resnet18, ResNet18_Weights
 from tqdm.auto import tqdm
-
-from src.models import load_model_from_checkpoint, model_for_name, BaseClassificationModel 
 
 
 def log(message: str) -> None:
     click.echo(f'[{datetime.now():%H:%M:%S}] {message}')
-
-
-def load_model(config: dict) -> BaseClassificationModel:
-    model_type = model_for_name(config['model_type'])
-    return load_model_from_checkpoint(
-        config['checkpoint'],
-        model_type
-    )
 
 
 def save_data(images: torch.Tensor, save_dir: Path) -> None:
@@ -65,7 +56,7 @@ def main(
 
     log('Successfully loaded the configuration')
 
-    model = load_model(config['model'])
+    model = resnet18(ResNet18_Weights.IMAGENET1K_V1)
     log('Successfully loaded model')
 
     device = config.get('device', 'cpu')
@@ -79,11 +70,11 @@ def main(
 
     if initialization == 'random':
         log('Using random initialization')
-        sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
+        sample_images = 0.5 * torch.randn(n_images, 3, 224, 224)
     elif initialization == 'color':
         log('Using color initialization')
-        sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
-        sample_images = sample_images + torch.tensor([179.0 / 255, 128.0 / 255, 147.0 / 255]).reshape(1, 3, 1, 1)
+        sample_images = 0.05 * torch.randn(n_images, 3, 224, 224)
+        sample_images = sample_images + torch.tensor([0.485, 0.456, 0.406]).reshape(1, 3, 1, 1)
     
     sample_images = sample_images.to(device)
     sample_images = sample_images.clip(0, 1)
