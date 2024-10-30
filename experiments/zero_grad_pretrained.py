@@ -34,7 +34,6 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 
 
 @click.command()
-@click.argument('run_configuration', type=click.Path(exists=True), required=True)
 @click.argument('n_images', type=int, required=True)
 @click.argument('n_iterations', type=int, required=True)
 @click.argument('val_every', type=int, required=True)
