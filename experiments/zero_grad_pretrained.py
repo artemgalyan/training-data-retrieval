@@ -40,7 +40,6 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('initialization', type=str, required=True)
 @click.argument('device', type=str, required=True)
 def main(
-    run_configuration: str,
     n_images: int,
     n_iterations: int,
     val_every: int,
