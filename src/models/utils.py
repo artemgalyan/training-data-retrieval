@@ -9,4 +9,4 @@ def load_model_from_checkpoint(checkpoint_path: Path | str, model_type: type, ma
     state_dict = torch.load(str(checkpoint_path), map_location=map_location)
     model = model_type(**state_dict['hyper_parameters'])
     model.load_state_dict(state_dict['state_dict'])
-    return model
+    return model.eval()

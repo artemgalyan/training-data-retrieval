@@ -6,6 +6,7 @@ from pathlib import Path
 
 import cv2
 import torch
+import torch.nn.functional as F
 
 from torch.autograd import grad
 from torch.optim import SGD
@@ -17,6 +18,10 @@ from src.models import load_model_from_checkpoint, model_for_name, BaseClassific
 
 def log(message: str) -> None:
     click.echo(f'[{datetime.now():%H:%M:%S}] {message}')
+
+
+def get_params_vector(model: torch.nn.Module) -> torch.Tensor:
+    return torch.nn.utils.parameters_to_vector(model.parameters())
 
 
 def load_model(config: dict) -> BaseClassificationModel:
@@ -72,7 +77,8 @@ def main(
     log(f'Using {device}')
     model.to(device)
 
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
+    smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
+    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}'
     save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
@@ -101,14 +107,15 @@ def main(
         optim.zero_grad()
         model.zero_grad()
         y = model(sample_images)
-        # y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
+        y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
-            sample_images,
+            model.parameters(),
             create_graph=True
-        )[0]
+        )
         
-        loss = (y_grad ** 2).sum()
+        y_grad = torch.cat([g.view(-1) for g in y_grad])
+        loss = sum((y ** 2).mean() for y in y_grad)
         loss.backward()
         optim.step()
         model.zero_grad()

@@ -3,5 +3,5 @@
         "model_type": "ClassificationNet",
         "checkpoint": "training-data-retrieval/models/vgg_128x128.ckpt"
     },
-    "device": "cuda:0"
+    "device": "cpu"
 }

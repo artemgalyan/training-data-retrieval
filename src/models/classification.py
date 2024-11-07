@@ -6,6 +6,13 @@ from .base import BaseClassificationModel
 from .blocks import ResidualBlock, ConvNormAct, Sequential
 
 
+def activation_for_name(name: str) -> type:
+    return {
+        'relu': nn.ReLU,
+        'gelu': nn.GELU,
+    }[name.lower()]
+
+
 class ClassificationNet(BaseClassificationModel):
     def __init__(
         self,
@@ -14,7 +21,7 @@ class ClassificationNet(BaseClassificationModel):
         image_channels: int,
         dilation: int = 1,
         norm: type = nn.BatchNorm2d,
-        activation: type = nn.ReLU,
+        activation: type | str = nn.ReLU,
         bias: bool = True
     ) -> None:
         """
@@ -25,6 +32,10 @@ class ClassificationNet(BaseClassificationModel):
         """
 
         super().__init__(num_classes)
+
+        if isinstance(activation, str):
+            activation = activation_for_name(activation)
+
         self.save_hyperparameters()
 
         self.configuration = configuration
@@ -105,6 +116,10 @@ class ClassificationResNet(BaseClassificationModel):
         """
 
         super().__init__(num_classes)
+
+        if isinstance(activation, str):
+            activation = activation_for_name(activation)
+
         self.save_hyperparameters()
 
         self.configuration = configuration

@@ -53,12 +53,14 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('n_iterations', type=int, required=True)
 @click.argument('val_every', type=int, required=True)
 @click.argument('initialization', type=str, required=True)
+@click.argument('alpha', type=float, required=True)
 def main(
     run_configuration: str,
     n_images: int,
     n_iterations: int,
     val_every: int,
-    initialization: str
+    initialization: str,
+    alpha: float
 ) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
@@ -77,7 +79,8 @@ def main(
     log(f'Using {device}')
     model.to(device)
 
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}'
+    smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
+    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}'
     save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
