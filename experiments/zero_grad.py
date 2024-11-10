@@ -52,7 +52,7 @@ def main(
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
     run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-p-{p}'
     if save_to_gdrive:
-        save_path = Path('/content/drive/My drive/experiments') / run_name
+        save_path = Path('/content/drive/MyDrive/experiments') / run_name
     else:
         save_path = Path(run_name)
     if not save_path.exists():
