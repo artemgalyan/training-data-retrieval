@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-train_classificator = 'src.train_classificator:main'
+train_classifier = 'src.train_classifier:main'
 
 [tool.setuptools.packages.find]
 include=['src', 'src.*']

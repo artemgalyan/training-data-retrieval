@@ -1,10 +1,9 @@
-import click
 import json
 
-from datetime import datetime
 from pathlib import Path
 
-import cv2
+import click
+import pandas as pd
 import torch
 import torch.nn.functional as F
 
@@ -13,38 +12,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import StepLR
 from tqdm.auto import tqdm
 
-from src.models import load_model_from_checkpoint, model_for_name, BaseClassificationModel 
-
-
-def log(message: str) -> None:
-    click.echo(f'[{datetime.now():%H:%M:%S}] {message}')
-
-
-def get_params_vector(model: torch.nn.Module) -> torch.Tensor:
-    return torch.nn.utils.parameters_to_vector(model.parameters())
-
-
-def load_model(config: dict) -> BaseClassificationModel:
-    model_type = model_for_name(config['model_type'])
-    return load_model_from_checkpoint(
-        config['checkpoint'],
-        model_type
-    )
-
-
-def save_data(images: torch.Tensor, save_dir: Path) -> None:
-    images = images.clone().cpu().detach().numpy()
-
-    if not save_dir.exists():
-        save_dir.mkdir()
-
-    for i in range(images.shape[0]):
-        image = images[i].transpose(1, 2, 0)[..., ::-1]
-        save_path = save_dir / f'{i}.png'
-        cv2.imwrite(
-            str(save_path),
-            (255 * image).astype('uint8')
-        )
+from src.experiments import log, load_model, save_data, initialize_sample_images
 
 
 @click.command()
@@ -53,12 +21,14 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('n_iterations', type=int, required=True)
 @click.argument('val_every', type=int, required=True)
 @click.argument('initialization', type=str, required=True)
+@click.option('-p', type=float, default=2.0, help='Grad penalty norm')
 def main(
     run_configuration: str,
     n_images: int,
     n_iterations: int,
     val_every: int,
-    initialization: str
+    initialization: str,
+    p: int
 ) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
@@ -70,7 +40,7 @@ def main(
 
     log('Successfully loaded the configuration')
 
-    model = load_model(config['model'])
+    model = load_model(config['model']).eval()
     log('Successfully loaded model')
 
     device = config.get('device', 'cpu')
@@ -78,19 +48,12 @@ def main(
     model.to(device)
 
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}'
+    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-p-{p}'
     save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
 
-    if initialization == 'random':
-        log('Using random initialization')
-        sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
-    elif initialization == 'color':
-        log('Using color initialization')
-        sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
-        sample_images = sample_images + torch.tensor([179.0 / 255, 128.0 / 255, 147.0 / 255]).reshape(1, 3, 1, 1)
-    
+    sample_images = initialize_sample_images(n_images, initialization)
     sample_images = sample_images.to(device)
     sample_images = sample_images.clip(0, 1)
     sample_images.requires_grad = True
@@ -115,7 +78,7 @@ def main(
         )
         
         y_grad = torch.cat([g.view(-1) for g in y_grad])
-        loss = sum((y ** 2).mean() for y in y_grad)
+        loss = sum(torch.abs(y ** p).mean() for y in y_grad)
         loss.backward()
         optim.step()
         model.zero_grad()
@@ -129,6 +92,12 @@ def main(
         if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
         
+    
+    losses = pd.DataFrame({
+        'Loss': losses
+    })
+    losses.to_csv(str(save_path / 'losses.csv'))
+
     with open(str(save_path / 'losses.txt'), 'w') as file:
         file.writelines(map(lambda x: f'{x}\n', losses))
 

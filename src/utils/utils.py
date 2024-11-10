@@ -3,6 +3,14 @@ from collections.abc import Callable
 from torch import nn, Tensor
 
 
+
+def get_params_vector(model: nn.Module) -> Tensor:
+    """
+    Returns model parameters as vector
+    """
+    return nn.utils.parameters_to_vector(model.parameters())
+
+
 class BatchNorm2dListener(nn.Module):
     """
     This class is a wrapper for nn.BatchNorm2d

@@ -1,10 +1,10 @@
-import click
 import json
 
-from datetime import datetime
+from collections import defaultdict
 from pathlib import Path
 
-import cv2
+import click
+import pandas as pd
 import torch
 import torch.nn.functional as F
 
@@ -13,38 +13,24 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import StepLR
 from tqdm.auto import tqdm
 
-from src.models import load_model_from_checkpoint, model_for_name, BaseClassificationModel 
+from src.experiments import log, load_model, save_data, initialize_sample_images
+from src.utils import insert_listener, BatchNorm2dListener
 
 
-def log(message: str) -> None:
-    click.echo(f'[{datetime.now():%H:%M:%S}] {message}')
-
-
-def get_params_vector(model: torch.nn.Module) -> torch.Tensor:
-    return torch.nn.utils.parameters_to_vector(model.parameters())
-
-
-def load_model(config: dict) -> BaseClassificationModel:
-    model_type = model_for_name(config['model_type'])
-    return load_model_from_checkpoint(
-        config['checkpoint'],
-        model_type
-    )
-
-
-def save_data(images: torch.Tensor, save_dir: Path) -> None:
-    images = images.clone().cpu().detach().numpy()
-
-    if not save_dir.exists():
-        save_dir.mkdir()
-
-    for i in range(images.shape[0]):
-        image = images[i].transpose(1, 2, 0)[..., ::-1]
-        save_path = save_dir / f'{i}.png'
-        cv2.imwrite(
-            str(save_path),
-            (255 * image).astype('uint8')
-        )
+class Accumulator:
+    """
+    Used for batchnorm losses
+    """
+    def __init__(self) -> None:
+        self.losses = []
+    
+    def __call__(self, item: torch.Tensor) -> None:
+        self.losses.append(item)
+    
+    def get_loss(self) -> None:
+        loss = torch.cat(self.losses)
+        self.losses = []
+        return loss
 
 
 @click.command()
@@ -54,13 +40,15 @@ def save_data(images: torch.Tensor, save_dir: Path) -> None:
 @click.argument('val_every', type=int, required=True)
 @click.argument('initialization', type=str, required=True)
 @click.argument('alpha', type=float, required=True)
+@click.option('-p', type=float, default=2.0, help='Grad penalty norm')
 def main(
     run_configuration: str,
     n_images: int,
     n_iterations: int,
     val_every: int,
     initialization: str,
-    alpha: float
+    alpha: float,
+    p: int
 ) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
@@ -72,32 +60,31 @@ def main(
 
     log('Successfully loaded the configuration')
 
-    model = load_model(config['model'])
+
+
+    model = load_model(config['model']).eval()
     log('Successfully loaded model')
+
+    mean_accumulator, var_accumulator = Accumulator(), Accumulator
+    insert_listener(model, lambda bn: BatchNorm2dListener(bn, p, mean_accumulator, var_accumulator))
+    log('Inserted BatchNorm2dListeners instead of BatchNorm2ds')
 
     device = config.get('device', 'cpu')
     log(f'Using {device}')
     model.to(device)
 
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}'
+    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}'
     save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
 
-    if initialization == 'random':
-        log('Using random initialization')
-        sample_images = 0.5 * torch.randn(n_images, 3, 128, 128)
-    elif initialization == 'color':
-        log('Using color initialization')
-        sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
-        sample_images = sample_images + torch.tensor([179.0 / 255, 128.0 / 255, 147.0 / 255]).reshape(1, 3, 1, 1)
-    
+    sample_images = initialize_sample_images(n_images, initialization)
     sample_images = sample_images.to(device)
     sample_images = sample_images.clip(0, 1)
     sample_images.requires_grad = True
 
-    losses = []
+    losses = defaultdict(list)
     optim = SGD([sample_images], lr=0.1)
     scheduler = StepLR(optim, 10_000, gamma=0.1)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
@@ -117,10 +104,16 @@ def main(
         )
         
         y_grad = torch.cat([g.view(-1) for g in y_grad])
-        loss = sum((y ** 2).mean() for y in y_grad)
+        grad_loss = sum(torch.abs(y ** p).mean() for y in y_grad)
+        bn_mean_loss = mean_accumulator.get_loss().mean()
+        bn_var_loss = var_accumulator.get_loss().mean()
+        loss = grad_loss + alpha * (bn_mean_loss + bn_var_loss)
         loss.backward()
         optim.step()
         model.zero_grad()
+        losses['Gradient loss'].append(float(grad_loss.cpu().item()))
+        losses['BN mean loss'].append(float(bn_mean_loss.cpu().item()))
+        losses['BN var loss'].append(float(bn_var_loss.cpu().item()))
         bar.set_description(str(loss.cpu().item()))
         scheduler.step()
         losses.append(float(loss.cpu().item()))
@@ -131,8 +124,8 @@ def main(
         if i % val_every == 0:
             save_data(sample_images, save_path / f'epoch-{i}')
         
-    with open(str(save_path / 'losses.txt'), 'w') as file:
-        file.writelines(map(lambda x: f'{x}\n', losses))
+    losses = pd.DataFrame(losses)
+    losses.to_csv(str(save_path / 'losses.csv'))
 
 
 if __name__ == '__main__':
