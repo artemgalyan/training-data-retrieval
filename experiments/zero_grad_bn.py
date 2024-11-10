@@ -41,6 +41,7 @@ class Accumulator:
 @click.argument('initialization', type=str, required=True)
 @click.argument('alpha', type=float, required=True)
 @click.option('-p', type=float, default=2.0, help='Grad penalty norm')
+@click.option('-sg', '--save_to_gdrive', type=bool, default=False, help='Whether to save to google drive')
 def main(
     run_configuration: str,
     n_images: int,
@@ -48,7 +49,8 @@ def main(
     val_every: int,
     initialization: str,
     alpha: float,
-    p: int
+    p: int,
+    save_to_gdrive: bool
 ) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
@@ -73,7 +75,10 @@ def main(
 
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
     run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}'
-    save_path = Path(run_name)
+    if save_to_gdrive:
+        save_path = Path('/content/drive/My drive/experiments') / run_name
+    else:
+        save_path = Path(run_name)
     if not save_path.exists():
         save_path.mkdir()
 
