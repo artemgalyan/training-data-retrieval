@@ -60,8 +60,6 @@ def main(
 
     log('Successfully loaded the configuration')
 
-
-
     model = load_model(config['model']).eval()
     log('Successfully loaded model')
 
