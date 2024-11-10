@@ -47,7 +47,7 @@ def save_data(images: Tensor, save_dir: Path) -> None:
 def initialize_sample_images(
         n_images: int,
         initialization: str,
-        data_path: Path | None = Path('data/histology_prior_images')
+        data_path: Path | None = Path('training-data-retrieval/data/histology_prior_images')
 ) -> Tensor:
     assert initialization in ['random', 'color', 'prior']
 
