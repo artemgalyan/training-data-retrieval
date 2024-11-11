@@ -106,7 +106,7 @@ def main(
             create_graph=True
         )
         
-        y_grad = torch.cat([g.view(-1) for g in y_grad])
+        y_grad = torch.cat([g.reshape(-1) for g in y_grad])
         grad_loss = sum(torch.abs(y ** p).mean() for y in y_grad)
         bn_mean_loss = mean_accumulator.get_loss().mean()
         bn_var_loss = var_accumulator.get_loss().mean()
