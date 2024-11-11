@@ -68,4 +68,4 @@ def initialize_sample_images(
     if len(result) > n_images:
         result = result[:n_images]
     result = np.stack(result, axis=0)
-    return torch.from_numpy(result)
+    return torch.from_numpy(result).permute(0, 3, 1, 2)
