@@ -82,7 +82,7 @@ def main(
             create_graph=True
         )
         
-        y_grad = torch.cat([g.view(-1) for g in y_grad])
+        y_grad = torch.cat([g.reshape(-1) for g in y_grad])
         loss = sum(torch.abs(y ** p).mean() for y in y_grad)
         loss.backward()
         optim.step()
