@@ -63,6 +63,7 @@ def initialize_sample_images(
     result = []
     for p in data_path.glob('*.png'):
         image = cv2.imread(str(p))[::-1].astype('float32') / 255
+        image = cv2.resize(image, (128, 128))
         result.append(image)
     
     if len(result) > n_images:
