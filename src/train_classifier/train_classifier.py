@@ -54,7 +54,8 @@ def load_datasets(config: dict) -> tuple[ClassificationDataset, ClassificationDa
 
 @click.command()
 @click.argument('run_configuration', type=click.Path(exists=True), required=True)
-def main(run_configuration: str) -> None:
+@click.option('-g', '--save_to_gdrive', type=bool, default=False)
+def main(run_configuration: str, save_to_gdrive: bool) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
         click.echo('Run configuration file should exist!', error=True)
@@ -73,6 +74,10 @@ def main(run_configuration: str) -> None:
     train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, drop_last=True, pin_memory=True, num_workers=num_workers)
     val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], num_workers=num_workers)
 
+    if save_to_gdrive:
+        saving = Path('/content/gdrive/MyDrive/') / config.get('checkpoint_dir', 'models')
+    else:
+        saving = 'checkpoint_dir', 'models'
     trainer = L.Trainer(
       **config['trainer'],
       logger=WandbLogger(
@@ -83,7 +88,7 @@ def main(run_configuration: str) -> None:
       callbacks=[
           ModelCheckpoint(
               monitor='val_loss',
-              dirpath=config.get('checkpoint_dir', 'models'),
+              dirpath=str(saving),
               filename=config.get('saving_format', '{epoch}-{val_accuracy:.2f}'),
               save_top_k=3,
               save_last=True

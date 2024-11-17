@@ -31,6 +31,6 @@
         "precision": 16,
         "max_epochs": 50
     },
-    "checkpoint_dir": "/content/drive/MyDrive/models",
+    "checkpoint_dir": "models",
     "run_name": "Smooth VGG-like classifier"
 }
