@@ -35,6 +35,6 @@
         "precision": 16,
         "max_epochs": 50
     },
-    "checkpoint_dir": "models",
+    "checkpoint_dir": "/content/drive/MyDrive/models",
     "run_name": "Smooth ResNet classifier"
 }
