@@ -1,0 +1,40 @@
+{
+    "model": {
+        "model_type": "ClassificationNet",
+        "kwargs": {
+            "num_classes": 2,
+            "configuration": [
+                [8, 2],
+                [16, 2],
+                [32, 2],
+                [48, 2]
+            ],
+            "image_channels": 3,
+            "activation": "GELU"
+        }
+    },
+    "datasets": {
+        "train": {
+            "split_path": "train",
+            "classes": ["epi", "nrm"]
+        },
+        "val": {
+            "split_path": "test",
+            "classes": ["epi", "nrm"]
+        },
+        "image_size": [128, 128],
+        "num_workers": 2,
+        "noise": {
+            "mean": 0,
+            "sigma": 1
+        }
+    },
+    "batch_size": 64,
+    "trainer": {
+        "accelerator": "cuda",
+        "precision": 16,
+        "max_epochs": 50
+    },
+    "checkpoint_dir": "models",
+    "run_name": "Smooth VGG-like classifier"
+}

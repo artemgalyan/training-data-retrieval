@@ -42,6 +42,7 @@ class Accumulator:
 @click.argument('alpha', type=float, required=True)
 @click.option('-p', type=float, default=2.0, help='Grad penalty norm')
 @click.option('-sg', '--save_to_gdrive', type=bool, default=False, help='Whether to save to google drive')
+@click.option('-m', '--mode', type=str, default='train', help='NN mode to run: train or eval')
 def main(
     run_configuration: str,
     n_images: int,
@@ -50,7 +51,8 @@ def main(
     initialization: str,
     alpha: float,
     p: int,
-    save_to_gdrive: bool
+    save_to_gdrive: bool,
+    mode: str
 ) -> None:
     config_path = Path(run_configuration)
     if not config_path.exists() or not config_path.is_file():
@@ -62,7 +64,13 @@ def main(
 
     log('Successfully loaded the configuration')
 
-    model = load_model(config['model']).eval()
+    model = load_model(config['model'])
+    
+    model = load_model(config['model'])
+    if mode == 'train':
+        model.train()
+    else:
+        model.eval()
     log('Successfully loaded model')
 
     mean_accumulator, var_accumulator = Accumulator(), Accumulator
