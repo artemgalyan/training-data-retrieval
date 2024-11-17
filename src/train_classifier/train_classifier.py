@@ -75,7 +75,7 @@ def main(run_configuration: str, save_to_gdrive: bool) -> None:
     val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], num_workers=num_workers)
 
     if save_to_gdrive:
-        saving = Path('/content/gdrive/MyDrive/') / config.get('checkpoint_dir', 'models')
+        saving = Path('/content/gdrive/MyDrive/') / config.get('checkpoint_dir', 'models') / config['run_name']
     else:
         saving = 'checkpoint_dir', 'models'
     trainer = L.Trainer(
