@@ -20,7 +20,7 @@ dependencies = [
 
 [project.scripts]
 train_classifier = 'src.train_classifier:main'
-generate_figures = 'src.generate_figures:main'
+generate_figures = 'src.generate:main'
 
 [tool.setuptools.packages.find]
 include=['src', 'src.*']
