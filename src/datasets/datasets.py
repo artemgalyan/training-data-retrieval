@@ -94,6 +94,6 @@ class FigureDataset(ClassificationDataset):
         if self.keep_in_memory:
             image = self.preloaded_images[index]
         else:
-            image = read_image(self.image_files[index])
+            image = read_image(self.image_files[index])[..., :1]
         label = self.class_to_index[self.labels[index]]
         return self.transforms(image), label
