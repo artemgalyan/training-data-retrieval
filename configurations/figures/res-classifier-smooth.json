@@ -4,9 +4,9 @@
         "kwargs": {
             "num_classes": 2,
             "configuration": [
+                [4, 1],
                 [8, 1],
-                [12, 1],
-                [24, 1],
+                [12, 1]
             ],
             "image_channels": 1,
             "activation": "GELU"
