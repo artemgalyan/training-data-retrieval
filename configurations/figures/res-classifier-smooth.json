@@ -1,36 +1,8 @@
 {
     "model": {
         "model_type": "ClassificationResNet",
-        "kwargs": {
-            "num_classes": 2,
-            "configuration": [
-                [4, 1],
-                [8, 1],
-                [12, 1]
-            ],
-            "image_channels": 1,
-            "activation": "GELU"
-        }
+        "checkpoint": "training-data-retrieval/models/res_smooth_figures_64.ckpt"
     },
-    "datasets": {
-        "dataset": "FigureDataset",
-        "train": {
-            "split_path": "data/train",
-            "classes": ["triangles", "rectangles"]
-        },
-        "val": {
-            "split_path": "data/test",
-            "classes": ["triangles", "rectangles"]
-        },
-        "image_size": [64, 64],
-        "num_workers": 2
-    },
-    "batch_size": 64,
-    "trainer": {
-        "accelerator": "cuda",
-        "precision": 16,
-        "max_epochs": 20
-    },
-    "checkpoint_dir": "models",
-    "run_name": "Smooth figures ResNet classifier"
+    "device": "cuda:0",
+    "size": [1, 64, 64]
 }

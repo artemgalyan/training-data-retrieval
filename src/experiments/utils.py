@@ -46,13 +46,14 @@ def save_data(images: Tensor, save_dir: Path) -> None:
 
 def initialize_sample_images(
         n_images: int,
+        size: tuple[int, int, int],
         initialization: str,
         data_path: Path | None = Path('training-data-retrieval/data/histology_prior_images')
 ) -> Tensor:
     assert initialization in ['random', 'color', 'prior']
 
     if initialization == 'random':
-        return (0.5 + torch.randn(n_images, 3, 128, 128)).clip(0, 1)
+        return (0.5 + torch.randn(n_images, *size)).clip(0, 1)
     if initialization == 'color':
         sample_images = 0.05 * torch.randn(n_images, 3, 128, 128)#.clip(0, 1)
         sample_images = sample_images + torch.tensor([179.0 / 255, 128.0 / 255, 147.0 / 255]).reshape(1, 3, 1, 1)

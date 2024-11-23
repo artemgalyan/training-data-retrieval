@@ -90,7 +90,7 @@ def main(
     if not save_path.exists():
         save_path.mkdir()
 
-    sample_images = initialize_sample_images(n_images, initialization)
+    sample_images = initialize_sample_images(n_images, config.get('size', (1, 128, 128)), initialization)
     sample_images = sample_images.to(device)
     sample_images = sample_images.clip(0, 1)
     sample_images.requires_grad = True
