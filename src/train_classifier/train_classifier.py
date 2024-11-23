@@ -53,7 +53,8 @@ def load_datasets(config: dict) -> tuple[ClassificationDataset, ClassificationDa
         dataset = FigureDataset
     else:
         dataset = HistologyDataset
-    return dataset(**train, transforms=train_t), HistologyDataset(**val, transforms=test_t)
+
+    return dataset(**train, transforms=train_t), dataset(**val, transforms=test_t)
 
 
 @click.command()

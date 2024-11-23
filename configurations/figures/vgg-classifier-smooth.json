@@ -27,7 +27,7 @@
     },
     "batch_size": 64,
     "trainer": {
-        "accelerator": "cuda",
+        "accelerator": "cpu",
         "precision": 16,
         "max_epochs": 20
     },

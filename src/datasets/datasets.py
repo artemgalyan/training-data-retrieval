@@ -68,6 +68,7 @@ class FigureDataset(ClassificationDataset):
     def __init__(
             self, split_path: Path | str, transforms, classes: list[str], keep_in_memory: bool = True
     ) -> None:
+        super().__init__(classes)
         
         self.split_path = Path(split_path)
         self.transforms = transforms
@@ -95,5 +96,6 @@ class FigureDataset(ClassificationDataset):
             image = self.preloaded_images[index]
         else:
             image = read_image(self.image_files[index])[..., :1]
+        
         label = self.class_to_index[self.labels[index]]
         return self.transforms(image), label

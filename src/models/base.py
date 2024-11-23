@@ -49,6 +49,7 @@ class BaseClassificationModel(BaseModel):
     
     def validation_step(self, batch: Tensor, batch_idx: int) -> None:
         x, y = batch
+        print(x.shape)
         z = self.get_logits(x)
         if self.num_classes == 2:
             z = z[:, 1]

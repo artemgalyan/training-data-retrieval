@@ -2,6 +2,7 @@
 .idea/
 results/
 data/figures/
+wandb/
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
