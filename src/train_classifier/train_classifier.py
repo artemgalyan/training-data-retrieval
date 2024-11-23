@@ -11,7 +11,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint, TQDMProgressBar, Learni
 from lightning.pytorch.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
-from src.datasets import ClassificationDataset, HistologyDataset
+from src.datasets import ClassificationDataset, HistologyDataset, FigureDataset
 from src.models import model_for_name, BaseClassificationModel 
 
 
@@ -49,7 +49,11 @@ def load_datasets(config: dict) -> tuple[ClassificationDataset, ClassificationDa
     train_t, test_t = get_transforms(tuple(config['image_size']), config.get('noise', None))
     train = config['train']
     val = config['val']
-    return HistologyDataset(**train, transforms=train_t), HistologyDataset(**val, transforms=test_t)
+    if config.get('dataset') == 'FigureDataset':
+        dataset = FigureDataset
+    else:
+        dataset = HistologyDataset
+    return dataset(**train, transforms=train_t), HistologyDataset(**val, transforms=test_t)
 
 
 @click.command()
