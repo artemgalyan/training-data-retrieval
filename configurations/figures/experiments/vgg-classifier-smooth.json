@@ -1,36 +1,8 @@
 {
     "model": {
         "model_type": "ClassificationNet",
-        "kwargs": {
-            "num_classes": 2,
-            "configuration": [
-                [4, 2],
-                [8, 2],
-                [12, 2]
-            ],
-            "image_channels": 1,
-            "activation": "GELU"
-        }
+        "checkpoint": "training-data-retrieval/models/vgg_figures_64.ckpt"
     },
-    "datasets": {
-        "dataset": "FigureDataset",
-        "train": {
-            "split_path": "data/train",
-            "classes": ["triangles", "rectangles"]
-        },
-        "val": {
-            "split_path": "data/test",
-            "classes": ["triangles", "rectangles"]
-        },
-        "image_size": [64, 64],
-        "num_workers": 2
-    },
-    "batch_size": 64,
-    "trainer": {
-        "accelerator": "cpu",
-        "precision": 16,
-        "max_epochs": 20
-    },
-    "checkpoint_dir": "models",
-    "run_name": "Smooth figures VGG-like classifier"
+    "device": "cuda:0",
+    "size": [1, 64, 64]
 }
