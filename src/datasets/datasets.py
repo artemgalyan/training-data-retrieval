@@ -83,7 +83,7 @@ class FigureDataset(ClassificationDataset):
             self.labels.extend([clazz] * len(files))
         
         if keep_in_memory:
-            self.preloaded_images = [read_image(f)[... :1] for f in self.image_files]
+            self.preloaded_images = [read_image(f)[..., :1] for f in self.image_files]
         else:
             self.preloaded_images = []
     
