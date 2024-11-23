@@ -15,11 +15,11 @@
     "datasets": {
         "dataset": "FigureDataset",
         "train": {
-            "split_path": "train",
+            "split_path": "data/train",
             "classes": ["triangles", "rectangles"]
         },
         "val": {
-            "split_path": "test",
+            "split_path": "data/test",
             "classes": ["triangles", "rectangles"]
         },
         "image_size": [64, 64],
