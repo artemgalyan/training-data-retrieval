@@ -49,8 +49,21 @@ N_TRAIN = 1000
 N_TEST = 100
 
 
+def create_if_not_exist(p: Path):
+    if not p.exists():
+        p.mkdir()
+
+
 def main() -> None:
     output = Path('data')
+    create_if_not_exist(output)
+    create_if_not_exist(output / 'train')
+    create_if_not_exist(output / 'train' / 'triangles')
+    create_if_not_exist(output / 'train' / 'rectangles')
+    create_if_not_exist(output / 'test')
+    create_if_not_exist(output / 'test' / 'triangles')
+    create_if_not_exist(output / 'test' / 'rectangles')
+    
     for i in trange(N_TRAIN):
         triangle = generate_triangle()
         cv2.imwrite(str(output / 'train' / 'triangles' / f'{i}.png'), (255 * triangle).astype('uint8'))
