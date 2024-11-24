@@ -74,7 +74,7 @@ def main(
     log('Successfully loaded model')
 
     mean_accumulator, var_accumulator = Accumulator(), Accumulator
-    insert_listener(model, lambda bn: BatchNorm2dListener(bn, p, mean_accumulator, var_accumulator))
+    insert_listener(model, lambda bn: BatchNorm2dListener(bn, lambda x, y: torch.abs(x - y) ** p, mean_accumulator, var_accumulator))
     log('Inserted BatchNorm2dListeners instead of BatchNorm2ds')
 
     device = config.get('device', 'cpu')
