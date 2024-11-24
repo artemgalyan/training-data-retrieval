@@ -127,7 +127,7 @@ def main(
         losses['BN var loss'].append(float(bn_var_loss.cpu().item()))
         bar.set_description(str(loss.cpu().item()))
         scheduler.step()
-        losses.append(float(loss.cpu().item()))
+        losses['Loss'].append(float(loss.cpu().item()))
 
         with torch.no_grad():
             sample_images.clip_(0, 1)
