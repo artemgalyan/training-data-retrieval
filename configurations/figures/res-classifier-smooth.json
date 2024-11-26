@@ -29,7 +29,7 @@
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
-        "max_epochs": 20
+        "max_epochs": 50
     },
     "checkpoint_dir": "models",
     "run_name": "Smooth figures ResNet classifier"

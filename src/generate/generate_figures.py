@@ -45,8 +45,8 @@ def generate_rectangle() -> NDArray:
 
 
 IMAGE_SIZE = 64
-N_TRAIN = 1000
-N_TEST = 100
+N_TRAIN = 10000
+N_TEST = 1000
 
 
 def create_if_not_exist(p: Path):
