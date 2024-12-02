@@ -6,6 +6,7 @@ import cv2
 from numpy.typing import NDArray
 from torch import Tensor
 from torch.utils.data import Dataset
+from torchvision.datasets import MNIST
 
 
 def read_image(path: Path | str) -> NDArray:
@@ -99,3 +100,28 @@ class FigureDataset(ClassificationDataset):
         
         label = self.class_to_index[self.labels[index]]
         return self.transforms(image), label
+    
+
+class MNISTDataset(ClassificationDataset):
+    def __init__(
+            self, split_path: Path | str, transforms, classes: list[str], **kw
+    ) -> None:
+        super().__init__(classes)
+
+        is_train = str(split_path).endswith('train')
+        self.dataset = MNIST(
+            'mnist-dataset-' + ('train' if is_train else 'val'), 
+            train=is_train,
+            transform=transforms,
+            download=True
+        )
+        
+        self.split_path = Path(split_path)
+        self.transforms = transforms
+        self.classes = classes
+
+    def __len__(self) -> None:
+        return len(self.image_files)
+
+    def __getitem__(self, index: int) -> tuple[Tensor, int]:
+        return self.dataset[index]
