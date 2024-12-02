@@ -2,11 +2,20 @@ from glob import glob
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 from numpy.typing import NDArray
 from torch import Tensor
 from torch.utils.data import Dataset
 from torchvision.datasets import MNIST
+
+
+def dataset_from_name(name: str) -> type:
+    return {
+        'HistologyDataset': HistologyDataset,
+        'FigureDataset': FigureDataset,
+        'MNISTDataset': MNISTDataset
+    }[name]
 
 
 def read_image(path: Path | str) -> NDArray:
@@ -115,13 +124,13 @@ class MNISTDataset(ClassificationDataset):
             transform=transforms,
             download=True
         )
-        
+
         self.split_path = Path(split_path)
         self.transforms = transforms
         self.classes = classes
 
     def __len__(self) -> None:
-        return len(self.image_files)
+        return len(self.dataset)
 
     def __getitem__(self, index: int) -> tuple[Tensor, int]:
         return self.dataset[index]

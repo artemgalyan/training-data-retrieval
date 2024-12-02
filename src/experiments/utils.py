@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from random import randint
 
 import click
 import cv2
@@ -7,6 +8,7 @@ import numpy as np
 import torch
 
 from torch import Tensor, nn
+from scipy import ndimage
 
 from src.generate.generate_figures import generate_rectangle, generate_triangle
 from src.models import load_model_from_checkpoint, model_for_name, BaseClassificationModel 
@@ -76,6 +78,8 @@ def initialize_sample_images(
         return torch.randn(n_images, *size).clip(0, 1)
     if initialization == 'prior-inverted':
         data = [generate_rectangle() for _ in range(n_images // 2)] + [generate_triangle() for _ in range(n_images // 2)]
+        for i in range(len(data)):
+            data[i] = ndimage.rotate(data[i], randint(0, 90), reshape=False)
         data = np.stack(data, axis=0).astype('float32')
         return torch.from_numpy(data).permute(0, 3, 1, 2).contiguous()
     if initialization == 'prior-inverted-2':

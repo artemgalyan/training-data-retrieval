@@ -3,6 +3,6 @@
         "model_type": "ClassificationResNet",
         "checkpoint": "training-data-retrieval/models/res_smooth_figures_64.ckpt"
     },
-    "device": "cuda:0",
+    "device": "auto",
     "size": [1, 64, 64]
 }

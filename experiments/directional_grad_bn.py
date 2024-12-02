@@ -17,6 +17,21 @@ from src.experiments import log, load_model, save_data, initialize_sample_images
 from src.utils import insert_listener, BatchNorm2dListener
 
 
+@torch.no_grad()
+def get_angles_ng(model) -> list[torch.Tensor]:
+    return [
+        p / torch.norm(p, p=1)
+        for p in model.parameters()
+    ]
+
+
+def get_angles(grad) -> list[torch.Tensor]:
+    return [
+        p / torch.norm(p, p=1)
+        for p in grad
+    ]
+
+
 class Accumulator:
     """
     Used for batchnorm losses
@@ -86,7 +101,7 @@ def main(
     model.to(device)
 
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
-    run_name = f'{config["model"]["model_type"]}-zero-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}'
+    run_name = f'{config["model"]["model_type"]}-directional-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}'
     if save_to_gdrive:
         save_path = Path('/content/drive/MyDrive/experiments') / run_name
     else:
@@ -102,12 +117,13 @@ def main(
     tv = TotalVarianceLoss(kernel_size=5, channels=1)
 
     losses = defaultdict(list)
-    optim = SGD([sample_images], lr=0.1)
-    scheduler = StepLR(optim, 10_000, gamma=0.1)
+    optim = SGD([sample_images], lr=10)
+    scheduler = StepLR(optim, 10, gamma=0.7)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
     target[n_images // 2:] = 0
 
     bar = tqdm(range(n_iterations))
+    model_angles = get_angles_ng(model)
     save_data(sample_images, save_path / 'initial')
     for i in bar:
         optim.zero_grad()
@@ -123,9 +139,14 @@ def main(
             model.parameters(),
             create_graph=True
         )
+
+        grad_angles = get_angles(y_grad)
+        differences = [
+            (a - b).pow(p).mean()
+            for a, b in zip(model_angles, grad_angles) 
+        ]
         
-        y_grad = torch.cat([g.reshape(-1) for g in y_grad])
-        grad_loss = sum(torch.abs(z ** p).mean() for z in y_grad)
+        grad_loss = sum(differences)
         bn_mean_loss = mean_accumulator.get_loss().sum()
         bn_var_loss = var_accumulator.get_loss().sum()
         tv_loss = tv(sample_images).mean()
@@ -139,7 +160,6 @@ def main(
         losses['TV loss'].append(float(tv_loss.cpu().item()))
         losses['Class loss'].append(float(y.mean().cpu().item()))
         losses['Accuracy'].append(float(accuracy.cpu().item()))
-
         bar.set_description(f'{float(loss.cpu().item())}, {accuracy}%')
         scheduler.step()
         losses['Loss'].append(float(loss.cpu().item()))

@@ -1,8 +1,8 @@
 {
     "model": {
         "model_type": "ClassificationNet",
-        "checkpoint": "training-data-retrieval/models/vgg_figures_64.ckpt"
+        "checkpoint": "models/vgg_figures_64.ckpt"
     },
-    "device": "cuda:0",
+    "device": "auto",
     "size": [1, 64, 64]
 }

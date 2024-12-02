@@ -70,8 +70,8 @@ def main(
     sample_images.requires_grad = True
 
     losses = []
-    optim = SGD([sample_images], lr=0.1)
-    scheduler = StepLR(optim, 10_000, gamma=0.1)
+    optim = SGD([sample_images], lr=10)
+    scheduler = StepLR(optim, 10, gamma=0.7)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
     target[n_images // 2:] = 0
 
@@ -81,6 +81,9 @@ def main(
         optim.zero_grad()
         model.zero_grad()
         y = model(sample_images)
+        with torch.no_grad():
+            accuracy = y[:n_images // 2] > 0 + y[n_images // 2:] < 0
+            accuracy /= n_images
         y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
         y_grad = grad(
             y.sum(),
@@ -93,7 +96,7 @@ def main(
         loss.backward()
         optim.step()
         model.zero_grad()
-        bar.set_description(str(loss.cpu().item()))
+        bar.set_description(f'{float(loss.cpu().item())}, {accuracy}%')
         scheduler.step()
         losses.append(float(loss.cpu().item()))
 
