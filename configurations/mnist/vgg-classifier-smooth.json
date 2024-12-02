@@ -4,9 +4,8 @@
         "kwargs": {
             "num_classes": 10,
             "configuration": [
-                [8, 2],
-                [16, 2],
-                [32, 2],
+                [12, 2],
+                [24, 2],
                 [48, 2]
             ],
             "image_channels": 1,
@@ -16,21 +15,21 @@
     "datasets": {
         "train": {
             "split_path": "train",
-            "classes": ["epi", "nrm"]
+            "classes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         },
         "val": {
             "split_path": "test",
-            "classes": ["epi", "nrm"]
+            "classes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         },
-        "image_size": [128, 128],
+        "image_size": [28, 28],
         "num_workers": 2
     },
-    "batch_size": 64,
+    "batch_size": 256,
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
         "max_epochs": 50
     },
     "checkpoint_dir": "models",
-    "run_name": "Smooth VGG-like classifier"
+    "run_name": "MNIST smooth VGG-like classifier"
 }
