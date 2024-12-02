@@ -27,7 +27,7 @@ def get_transforms(
         T.ToTensor(),
         lambda x: x if noise_params is None else T.GaussianNoise(**noise_params),
         T.RandomHorizontalFlip(),
-        T.RandomRotation(degrees=90),
+        T.RandomRotation(degrees=15),
         T.RandomResizedCrop(size=image_size)
     ])
 
