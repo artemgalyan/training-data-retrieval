@@ -1,0 +1,36 @@
+{
+    "model": {
+        "model_type": "ClassificationNet",
+        "kwargs": {
+            "num_classes": 2,
+            "configuration": [
+                [12, 2],
+                [24, 2],
+                [48, 2]
+            ],
+            "image_channels": 1,
+            "activation": "GELU"
+        }
+    },
+    "datasets": {
+        "dataset": "BinaryMNISTDataset",
+        "train": {
+            "split_path": "train",
+            "classes": [0, 1]
+        },
+        "val": {
+            "split_path": "test",
+            "classes": [0, 1]
+        },
+        "image_size": [28, 28],
+        "num_workers": 2
+    },
+    "batch_size": 256,
+    "trainer": {
+        "accelerator": "cuda",
+        "precision": 16,
+        "max_epochs": 50
+    },
+    "checkpoint_dir": "models",
+    "run_name": "MNIST smooth VGG-like classifier"
+}

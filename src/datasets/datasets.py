@@ -14,7 +14,8 @@ def dataset_from_name(name: str) -> type:
     return {
         'HistologyDataset': HistologyDataset,
         'FigureDataset': FigureDataset,
-        'MNISTDataset': MNISTDataset
+        'MNISTDataset': MNISTDataset,
+        'BinaryMNISTDataset': BinaryMNISTDataset
     }[name]
 
 
@@ -134,3 +135,19 @@ class MNISTDataset(ClassificationDataset):
 
     def __getitem__(self, index: int) -> tuple[Tensor, int]:
         return self.dataset[index]
+
+
+class BinaryMNISTDataset(ClassificationDataset):
+    def __init__(
+            self, split_path: Path | str, transforms, classes: list[str], **kw
+    ) -> None:
+        super().__init__(classes)
+
+        self.dataset = MNISTDataset(split_path, transforms, classes, **kw)
+
+    def __len__(self) -> None:
+        return len(self.dataset)
+
+    def __getitem__(self, index: int) -> tuple[Tensor, int]:
+        image, label = self.dataset[index]
+        return image, label % 2
