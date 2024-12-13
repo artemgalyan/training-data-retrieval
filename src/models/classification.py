@@ -64,10 +64,10 @@ class ClassificationNet(BaseClassificationModel):
             ])
             prev_dim = dim
         
-        modules.append(nn.Conv2d(prev_dim, prev_dim, 3, padding=1))
+        modules.append(nn.Conv2d(prev_dim, prev_dim, 3, padding=1, bias=bias))
         
         self.main = Sequential(*modules)
-        self.classifier = nn.Linear(prev_dim, num_classes)
+        self.classifier = nn.Linear(prev_dim, num_classes, bias=bias)
     
     def forward(
         self,

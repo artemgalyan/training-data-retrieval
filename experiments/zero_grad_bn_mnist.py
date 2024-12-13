@@ -104,8 +104,7 @@ def main(
     losses = defaultdict(list)
     optim = SGD([sample_images], lr=0.1)
     scheduler = StepLR(optim, 10_000, gamma=0.1)
-    target = torch.ones((n_images,), dtype=torch.float32).to(device)
-    target[n_images // 2:] = 0
+    target = torch.arange(n_images, dtype=torch.long).to(device) % 10
 
     bar = tqdm(range(n_iterations))
     save_data(sample_images, save_path / 'initial')
@@ -113,11 +112,7 @@ def main(
         optim.zero_grad()
         model.zero_grad()
         y = model(sample_images)
-        with torch.no_grad():
-            accuracy = (y[:n_images // 2, 1] > 0).sum() + (y[n_images // 2:, 1] < 0).sum()
-            accuracy = accuracy.float()
-            accuracy /= n_images
-        y = F.binary_cross_entropy_with_logits(y[:, 1].reshape(-1), target)
+        y = F.cross_entropy(y, target)
         y_grad = grad(
             y.sum(),
             model.parameters(),
@@ -138,9 +133,8 @@ def main(
         losses['BN var loss'].append(float(bn_var_loss.cpu().item()))
         losses['TV loss'].append(float(tv_loss.cpu().item()))
         losses['Class loss'].append(float(y.mean().cpu().item()))
-        losses['Accuracy'].append(float(accuracy.cpu().item()))
 
-        bar.set_description(f'{float(loss.cpu().item())}, {accuracy}%')
+        bar.set_description(f'{float(loss.cpu().item())}, {float(bn_mean_loss.cpu().item())} {float(bn_var_loss.cpu().item())}')
         scheduler.step()
         losses['Loss'].append(float(loss.cpu().item()))
 

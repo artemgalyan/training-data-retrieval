@@ -101,7 +101,7 @@ def main(
     model.to(device)
 
     smooth = 'smooth' if config['model'].get('activation', 'relu').lower() != 'relu' else 'non-smooth'
-    run_name = f'{config["model"]["model_type"]}-directional-grad-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}'
+    run_name = f'{config["model"]["model_type"]}-directional-grad-fixed-{n_images}-{n_iterations}-{initialization}-{smooth}-alpha-{alpha}-p-{p}-t-{theta}-g-{gamma}-{mode}'
     if save_to_gdrive:
         save_path = Path('/content/drive/MyDrive/experiments') / run_name
     else:
@@ -109,16 +109,16 @@ def main(
     if not save_path.exists():
         save_path.mkdir()
 
-    sample_images = initialize_sample_images(n_images, config.get('size', (1, 128, 128)), initialization)
+    sample_images = initialize_sample_images(n_images, config.get('size', (3, 128, 128)), initialization)
     sample_images = sample_images.to(device)
     sample_images = sample_images.clip(0, 1)
     sample_images.requires_grad = True
 
-    tv = TotalVarianceLoss(kernel_size=5, channels=1)
+    tv = TotalVarianceLoss(kernel_size=5, channels=sample_images.shape[1])
 
     losses = defaultdict(list)
     optim = SGD([sample_images], lr=10)
-    scheduler = StepLR(optim, 10, gamma=0.7)
+    scheduler = StepLR(optim, 50, gamma=0.95)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
     target[n_images // 2:] = 0
 
@@ -142,7 +142,7 @@ def main(
 
         grad_angles = get_angles(y_grad)
         differences = [
-            (a - b).pow(p).mean()
+            torch.abs(a + b).pow(p).mean()
             for a, b in zip(model_angles, grad_angles) 
         ]
         
@@ -150,7 +150,10 @@ def main(
         bn_mean_loss = mean_accumulator.get_loss().sum()
         bn_var_loss = var_accumulator.get_loss().sum()
         tv_loss = tv(sample_images).mean()
-        loss = grad_loss + alpha * (bn_mean_loss + bn_var_loss) + gamma * tv_loss + theta * y.mean()
+        if i > 15:
+            loss = grad_loss + alpha * (bn_mean_loss + bn_var_loss) + gamma * tv_loss + theta * y.mean()
+        else:
+            loss = bn_mean_loss + bn_var_loss
         loss.backward()
         optim.step()
         model.zero_grad()
@@ -160,7 +163,8 @@ def main(
         losses['TV loss'].append(float(tv_loss.cpu().item()))
         losses['Class loss'].append(float(y.mean().cpu().item()))
         losses['Accuracy'].append(float(accuracy.cpu().item()))
-        bar.set_description(f'{float(loss.cpu().item())}, {accuracy}%')
+
+        bar.set_description(f'{float(loss.cpu().item())}, {accuracy}%, {float(bn_mean_loss.cpu().item())}, {float(bn_var_loss.cpu().item())}')
         scheduler.step()
         losses['Loss'].append(float(loss.cpu().item()))
 

@@ -1,0 +1,8 @@
+{
+    "model": {
+        "model_type": "ClassificationNet",
+        "checkpoint": "models/mnist/epoch-9.ckpt"
+    },
+    "device": "auto",
+    "size": [1, 28, 28]
+}

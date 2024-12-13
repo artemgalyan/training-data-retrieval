@@ -1,7 +1,7 @@
 {
     "model": {
         "model_type": "ClassificationNet",
-        "checkpoint": "training-data-retrieval/models/vgg_128x128_smooth.ckpt"
+        "checkpoint": "models/vgg_128x128_smooth.ckpt"
     },
-    "device": "cuda:0"
+    "device": "auto"
 }

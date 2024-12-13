@@ -15,7 +15,9 @@ def dataset_from_name(name: str) -> type:
         'HistologyDataset': HistologyDataset,
         'FigureDataset': FigureDataset,
         'MNISTDataset': MNISTDataset,
-        'BinaryMNISTDataset': BinaryMNISTDataset
+        'BinaryMNISTDataset': BinaryMNISTDataset,
+        'TinyBinaryMNISTDataset': TinyBinaryMNISTDataset,
+        'SmallBinaryMNISTDataset': SmallBinaryMNISTDataset
     }[name]
 
 
@@ -147,6 +149,38 @@ class BinaryMNISTDataset(ClassificationDataset):
 
     def __len__(self) -> None:
         return len(self.dataset)
+
+    def __getitem__(self, index: int) -> tuple[Tensor, int]:
+        image, label = self.dataset[index]
+        return image, label % 2
+
+
+class TinyBinaryMNISTDataset(ClassificationDataset):
+    def __init__(
+            self, split_path: Path | str, transforms, classes: list[str], **kw
+    ) -> None:
+        super().__init__(classes)
+
+        self.dataset = MNISTDataset(split_path, transforms, classes, **kw)
+
+    def __len__(self) -> None:
+        return 500
+
+    def __getitem__(self, index: int) -> tuple[Tensor, int]:
+        image, label = self.dataset[index]
+        return image, label % 2
+
+
+class SmallBinaryMNISTDataset(ClassificationDataset):
+    def __init__(
+            self, split_path: Path | str, transforms, classes: list[str], **kw
+    ) -> None:
+        super().__init__(classes)
+
+        self.dataset = MNISTDataset(split_path, transforms, classes, **kw)
+
+    def __len__(self) -> None:
+        return 1000
 
     def __getitem__(self, index: int) -> tuple[Tensor, int]:
         image, label = self.dataset[index]

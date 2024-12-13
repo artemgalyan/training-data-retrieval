@@ -1,7 +1,7 @@
 {
     "model": {
         "model_type": "ClassificationResNet",
-        "checkpoint": "training-data-retrieval/models/res_smooth_figures_64.ckpt"
+        "checkpoint": "models/res_smooth_figures_64.ckpt"
     },
     "device": "auto",
     "size": [1, 64, 64]
