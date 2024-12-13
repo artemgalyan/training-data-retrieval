@@ -33,5 +33,5 @@
         "max_epochs": 50
     },
     "checkpoint_dir": "models",
-    "run_name": "BinaryMNIST smooth VGG-like classifier"
+    "run_name": "Small BinaryMNIST smooth VGG-like classifier"
 }
