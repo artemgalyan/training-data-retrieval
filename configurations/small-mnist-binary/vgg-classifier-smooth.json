@@ -14,7 +14,7 @@
         }
     },
     "datasets": {
-        "dataset": "TinyBinaryMNISTDataset",
+        "dataset": "SmallBinaryMNISTDataset",
         "train": {
             "split_path": "train",
             "classes": [0, 1]
