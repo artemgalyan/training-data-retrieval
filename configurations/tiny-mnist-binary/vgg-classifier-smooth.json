@@ -31,7 +31,6 @@
         "accelerator": "cuda",
         "precision": 16,
         "max_epochs": 100,
-        "val_every": 10
     },
     "checkpoint_dir": "models",
     "run_name": "Tiny BinaryMNIST smooth VGG-like classifier"
