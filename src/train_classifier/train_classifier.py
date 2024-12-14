@@ -26,9 +26,9 @@ def get_transforms(
     train_transforms = T.Compose([
         T.ToTensor(),
         lambda x: x if noise_params is None else T.GaussianNoise(**noise_params),
-        T.RandomHorizontalFlip(),
-        T.RandomRotation(degrees=15),
-        T.RandomResizedCrop(size=image_size)
+        # T.RandomHorizontalFlip(),
+        # T.RandomRotation(degrees=15),
+        # T.RandomResizedCrop(size=image_size)
     ])
 
     test_transforms = T.Compose([
@@ -73,7 +73,7 @@ def main(run_configuration: str, save_to_gdrive: bool) -> None:
     train_dataset, val_dataset = load_datasets(config['datasets'])
 
     num_workers = config['datasets'].get('num_workers', 0)
-    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, drop_last=True, pin_memory=True, num_workers=num_workers)
+    train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=False, drop_last=True, pin_memory=True, num_workers=num_workers)
     val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], num_workers=num_workers)
 
     if save_to_gdrive:
