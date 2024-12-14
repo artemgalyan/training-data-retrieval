@@ -34,7 +34,7 @@ class FullyConnectedNet(BaseClassificationModel):
         )
     
     def forward(self, x: Tensor, *args, **kwargs) -> Tensor:
-        return self.main(x.reshape(x.shape[0], self.dims))
+        return self.main(x.reshape(x.shape[0], self.dim))
     
     def get_logits(self, samples: Tensor) -> Tensor:
         return self.forward(samples)
