@@ -162,7 +162,7 @@ class TinyBinaryMNISTDataset(ClassificationDataset):
         super().__init__(classes)
 
         self.transforms = transforms
-        ds = MNISTDataset(split_path, transforms=None, classes, **kw)
+        ds = MNISTDataset(split_path, transforms=None, classes=classes, **kw)
         self.dataset = [ds[i] for i in range(500)]
 
     def __len__(self) -> None:
@@ -180,8 +180,8 @@ class SmallBinaryMNISTDataset(ClassificationDataset):
         super().__init__(classes)
 
         self.transforms = transforms
-        ds = MNISTDataset(split_path, transforms=None, classes, **kw)
-        self.dataset = [ds[i] for i in range(500)]
+        ds = MNISTDataset(split_path, transforms=None, classes=classes, **kw)
+        self.dataset = [ds[i] for i in range(1000)]
 
     def __len__(self) -> None:
         return 1000
