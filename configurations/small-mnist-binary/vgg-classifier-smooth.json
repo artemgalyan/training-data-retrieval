@@ -31,7 +31,7 @@
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
-        "max_epochs": 100
+        "max_epochs": 50000
     },
     "checkpoint_dir": "models",
     "run_name": "Small BinaryMNIST smooth VGG-like classifier"
