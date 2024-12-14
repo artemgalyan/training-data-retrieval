@@ -1,5 +1,7 @@
 import typing as tp
 
+import numpy as np
+
 from torch import nn, Tensor
 
 from .base import BaseClassificationModel
@@ -11,6 +13,28 @@ def activation_for_name(name: str) -> type:
         'relu': nn.ReLU,
         'gelu': nn.GELU,
     }[name.lower()]
+
+
+class FullyConnectedNet(BaseClassificationModel):
+    def __init__(
+        self,
+        num_classes: int,
+        image_size: list[int],
+        bias: bool = False
+    ) -> None:
+        super().__init__(num_classes)
+
+        self.dim = np.prod(image_size)
+        self.main = nn.Sequential(
+            nn.Linear(self.dim, 1000, bias=True),
+            nn.ReLU(),
+            nn.Linear(1000, 1000, bias=bias),
+            nn.ReLU(),
+            nn.Linear(1000, num_classes, bias=bias)
+        )
+    
+    def forward(self, x: Tensor, *args, **kwargs) -> Tensor:
+        return self.main(x.reshape(x.shape[0], self.dims))
 
 
 class ClassificationNet(BaseClassificationModel):

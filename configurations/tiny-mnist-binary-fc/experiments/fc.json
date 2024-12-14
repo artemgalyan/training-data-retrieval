@@ -1,0 +1,8 @@
+{
+    "model": {
+        "model_type": "FullyConnectedNet",
+        "checkpoint": "models/binary_mnist/fc.ckpt"
+    },
+    "device": "auto",
+    "size": [1, 28, 28]
+}

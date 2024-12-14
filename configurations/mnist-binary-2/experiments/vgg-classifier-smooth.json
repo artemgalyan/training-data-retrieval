@@ -1,7 +1,7 @@
 {
     "model": {
         "model_type": "ClassificationNet",
-        "checkpoint": "models/binary_mnist/v2.ckpt"
+        "checkpoint": "models/binary_mnist/v2-1.ckpt"
     },
     "device": "auto",
     "size": [1, 28, 28]

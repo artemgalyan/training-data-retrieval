@@ -78,6 +78,8 @@ def initialize_sample_images(
         return torch.randn(n_images, *size).clip(0, 1)
     if initialization == 'random-3':
         return (0.05 * torch.randn(n_images, *size)).clip(0, 1)
+    if initialization == 'random-4':
+        return (0.1307 + 0.3081 * torch.randn(n_images, *size)).clip(0, 1)
     if initialization == 'prior-inverted':
         data = [generate_rectangle() for _ in range(n_images // 2)] + [generate_triangle() for _ in range(n_images // 2)]
         for i in range(len(data)):

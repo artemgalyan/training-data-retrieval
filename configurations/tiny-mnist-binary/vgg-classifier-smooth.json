@@ -9,7 +9,7 @@
                 [48, 2]
             ],
             "image_channels": 1,
-            "activation": "GELU",
+            "activation": "ReLU",
             "bias": false,
             "norm": "none"
         }
@@ -31,8 +31,8 @@
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
-        "max_epochs": 50000
+        "max_epochs": 1000
     },
     "checkpoint_dir": "models",
-    "run_name": "Tiny BinaryMNIST smooth VGG-like classifier"
+    "run_name": "Tiny BinaryMNIST VGG-like classifier"
 }

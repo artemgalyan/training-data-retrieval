@@ -9,7 +9,8 @@ def model_for_name(clazz: str) -> type[BaseModel]:
     """
     mapping = {
         'ClassificationNet': ClassificationNet,
-        'ClassificationResNet': ClassificationResNet
+        'ClassificationResNet': ClassificationResNet,
+        'FullyConnectedNet': FullyConnectedNet
     }
 
     if clazz not in mapping:

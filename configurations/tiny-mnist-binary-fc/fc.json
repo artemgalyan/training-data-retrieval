@@ -1,21 +1,14 @@
 {
     "model": {
-        "model_type": "ClassificationNet",
+        "model_type": "FullyConnectedNet",
         "kwargs": {
             "num_classes": 2,
-            "configuration": [
-                [12, 2],
-                [24, 2],
-                [48, 2]
-            ],
-            "image_channels": 1,
-            "activation": "ReLU",
-            "bias": false,
-            "norm": "none"
+            "image_size": [1, 28, 28],
+            "bias": false
         }
     },
     "datasets": {
-        "dataset": "SmallBinaryMNISTDataset",
+        "dataset": "TinyBinaryMNISTDataset",
         "train": {
             "split_path": "train",
             "classes": [0, 1]
@@ -27,12 +20,12 @@
         "image_size": [28, 28],
         "num_workers": 2
     },
-    "batch_size": 256,
+    "batch_size": 128,
     "trainer": {
         "accelerator": "cuda",
         "precision": 16,
         "max_epochs": 1000
     },
     "checkpoint_dir": "models",
-    "run_name": "Small BinaryMNIST smooth VGG-like classifier"
+    "run_name": "FC BinaryMNIST"
 }
