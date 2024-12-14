@@ -161,14 +161,16 @@ class TinyBinaryMNISTDataset(ClassificationDataset):
     ) -> None:
         super().__init__(classes)
 
-        self.dataset = MNISTDataset(split_path, transforms, classes, **kw)
+        self.transforms = transforms
+        ds = MNISTDataset(split_path, transforms=None, classes, **kw)
+        self.dataset = [ds[i] for i in range(500)]
 
     def __len__(self) -> None:
-        return 500
+        return len(self.dataset)
 
     def __getitem__(self, index: int) -> tuple[Tensor, int]:
         image, label = self.dataset[index]
-        return image, label % 2
+        return self.transforms(image), label % 2
 
 
 class SmallBinaryMNISTDataset(ClassificationDataset):
@@ -177,11 +179,13 @@ class SmallBinaryMNISTDataset(ClassificationDataset):
     ) -> None:
         super().__init__(classes)
 
-        self.dataset = MNISTDataset(split_path, transforms, classes, **kw)
+        self.transforms = transforms
+        ds = MNISTDataset(split_path, transforms=None, classes, **kw)
+        self.dataset = [ds[i] for i in range(500)]
 
     def __len__(self) -> None:
         return 1000
 
     def __getitem__(self, index: int) -> tuple[Tensor, int]:
         image, label = self.dataset[index]
-        return image, label % 2
+        return self.transforms(image), label % 2
