@@ -37,8 +37,8 @@ class ClassificationNet(BaseClassificationModel):
             activation = activation_for_name(activation)
         
         if isinstance(norm, str):
-            norm = nn.Identity() if norm == 'none' else nn.BatchNorm2d
-
+            norm = nn.Identity if norm == 'none' else nn.BatchNorm2d
+        
         self.save_hyperparameters()
 
         self.configuration = configuration
