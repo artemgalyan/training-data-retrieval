@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 
 from torch.autograd import grad
-from torch.optim import SGD
+from torch.optim import SGD, Adam
 from torch.optim.lr_scheduler import StepLR
 from tqdm.auto import tqdm
 
@@ -117,8 +117,8 @@ def main(
     tv = TotalVarianceLoss(kernel_size=5, channels=sample_images.shape[1])
 
     losses = defaultdict(list)
-    optim = SGD([sample_images], lr=10)
-    scheduler = StepLR(optim, 50, gamma=0.95)
+    optim = Adam([sample_images], lr=0.01)
+    scheduler = StepLR(optim, 50_000, gamma=0.97)
     target = torch.ones((n_images,), dtype=torch.float32).to(device)
     target[n_images // 2:] = 0
 
@@ -143,7 +143,8 @@ def main(
         grad_angles = get_angles(y_grad)
         differences = [
             torch.abs(a + b).pow(p).mean()
-            for a, b in zip(model_angles, grad_angles) 
+            for a, b in zip(model_angles, grad_angles)
+            if len(a.shape) > 1 
         ]
         
         grad_loss = sum(differences)

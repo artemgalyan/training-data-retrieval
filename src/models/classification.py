@@ -20,7 +20,7 @@ class ClassificationNet(BaseClassificationModel):
         configuration: list[tuple[int, int]],
         image_channels: int,
         dilation: int = 1,
-        norm: type = nn.BatchNorm2d,
+        norm: type | str = nn.BatchNorm2d,
         activation: type | str = nn.ReLU,
         bias: bool = True
     ) -> None:
@@ -35,6 +35,9 @@ class ClassificationNet(BaseClassificationModel):
 
         if isinstance(activation, str):
             activation = activation_for_name(activation)
+        
+        if isinstance(norm, str):
+            norm = nn.Identity() if norm == 'none' else nn.BatchNorm2d
 
         self.save_hyperparameters()
 

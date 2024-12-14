@@ -32,12 +32,15 @@ class BatchNorm2dListener(nn.Module):
         self.mean_callback = mean_callback
         self.var_callback = var_callback
 
+        self.target_mean = self.wrapped.running_mean.detach().clone()
+        self.target_var = self.wrapped.running_var.detach().clone()
+
     def forward(self, x):
         mean = x.mean(axis=[0, 2, 3])
         var = x.var(axis=[0, 2, 3])
 
-        mean_distance = self.metric(mean, self.wrapped.running_mean)
-        var_distance = self.metric(var, self.wrapped.running_var)
+        mean_distance = self.metric(mean, self.target_mean)
+        var_distance = self.metric(var, self.target_var)
 
         self.mean_callback(mean_distance)
         self.var_callback(var_distance)

@@ -10,7 +10,8 @@
             ],
             "image_channels": 1,
             "activation": "GELU",
-            "bias": false
+            "bias": false,
+            "norm": "none"
         }
     },
     "datasets": {
